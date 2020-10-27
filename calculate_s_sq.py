@@ -19,8 +19,6 @@
 
 #
 #
-
-
 import sys
 import h5py
 import numpy as np
@@ -189,15 +187,11 @@ def case_one(occ_ref_alpha,occ_ref_beta,iv,ic,osqarray):
     for mm in occ_alpha:
         for nn in occ_beta:
             temp = temp + osqarray[mm-1,nn-1]
-    # when the excitations are identical, use formula for identical.
-    # needed: overlaps-squared for all occupied orbitals
-    # loop through occupied up-spins (m), then down-spins (n), use |Delta_(mn)|**2
 
     # Need the negative of the above
     temp = -temp
 
     # now tack on the static factor
-
     sfac = static_factor(occ_ref_alpha,occ_ref_beta)
     print('static factor')
     print(sfac)
@@ -213,15 +207,12 @@ def case_two_a(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     # = - (-1)^{iv-ivp} sum_{n in occ_beta} \Delta_{iv,n}\Delta^*_{ivp,n}
 
     occ_beta = occupied_beta(occ_ref_beta,ic)
-    # BAB debug: need to compare list of occupied spin-up channels from each determinant:
     occ_alpha1 = occupied_alpha(occ_ref_alpha,iv)
     occ_alpha2 = occupied_alpha(occ_ref_alpha,ivp)
-    # BAB debug: output list of the different up-spin orbital, in order [orbital_alpha_no_prime,orbital_alpha_prime]
     alpha_orb_idx = [x for x in occ_alpha1 if x not in set(occ_alpha2)]
     alpha_orb_idx = alpha_orb_idx + [x for x in occ_alpha2 if x not in set(occ_alpha1)]
     # define beta_orb_idx as null list, for use in slater determinant phase calculation
     beta_orb_idx = []
-    # end BAB
 
     print('case two a')
     print('occ_alpha1')
@@ -271,14 +262,12 @@ def case_two_b(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     # = - (-1)^{ic-icp} sum_{m in occ_alpha} \Delta_{m,icp}\Delta^*_{m,ic}
 
     occ_alpha = occupied_alpha(occ_ref_alpha,iv)
-    # BAB debug: need to compare list of occupied spin-down channels from each determinant:
     occ_beta1 = occupied_beta(occ_ref_beta,ic)
     occ_beta2 = occupied_beta(occ_ref_beta,icp)
     beta_orb_idx = [x for x in occ_beta1 if x not in set(occ_beta2)]
     beta_orb_idx = beta_orb_idx + [x for x in occ_beta2 if x not in set(occ_beta1)]
     # initialize alpha_orb_idx as null list for slater determinant phase calculation
     alpha_orb_idx = []
-    # end BAB
 
     print('case two b')
     print('occ_beta1')
@@ -304,7 +293,6 @@ def case_two_b(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
         temp = temp + reoarray[mm-1,icp-1]*reoarray[mm-1,ic-1] + imoarray[mm-1,icp-1]*imoarray[mm-1,ic-1]
         temp = temp - 1j*reoarray[mm-1,icp-1]*imoarray[mm-1,ic-1] + 1j*imoarray[mm-1,icp-1]*reoarray[mm-1,ic-1]
 
-    # BAB debug: use slater determinant method...
     sl1 = make_slater(el,occ_alpha,occ_beta1)
     sl2 = make_slater(el,occ_alpha,occ_beta2)
     print('Slater 1')
@@ -329,15 +317,10 @@ def case_three(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     # of Slater determinants, found from
     # https://stackoverflow.com/questions/3462143/get-difference-between-two-lists
 
-    # BAB debug: need to compare list of occupied spin-up channels from each determinant:
     occ_alpha1 = occupied_alpha(occ_ref_alpha,iv)
     occ_alpha2 = occupied_alpha(occ_ref_alpha,ivp)
-    # end BAB
-    # BAB debug: need to compare list of occupied spin-down channels from each determinant:
     occ_beta1 = occupied_beta(occ_ref_beta,ic)
     occ_beta2 = occupied_beta(occ_ref_beta,icp)
-    # end BAB
-
 
     print('case three')
     print('occ_alpha1')
@@ -378,7 +361,6 @@ def case_three(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     temp = temp - 1j*reoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*imoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1] 
     temp = temp + 1j*imoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*reoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1]
 
-
     # BAB debug: use slater determinant method...
     sl1 = make_slater(el,occ_alpha1,occ_beta1)
     sl2 = make_slater(el,occ_alpha2,occ_beta2)
@@ -391,7 +373,6 @@ def case_three(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(sl_phase)
     print()
     temp = sl_phase*temp
-
 
     return -temp
 
@@ -514,7 +495,7 @@ def calculate_s2(nvb,ncb):
     occ_ref_alpha, occ_ref_beta = occ_ref(ifmin,ifmax,nvb)
 
     # initialize <S^2>:
-    s2 = np.zeros((nvb*ncb))
+    s2 = np.zeros((nvb*ncb),dtype="complex")
     
     # loop through excitation number,
     # then loop through valence and conduction bands in row and col dimensions,
