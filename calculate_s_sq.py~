@@ -12,7 +12,7 @@
 #
 #
 # Author: Bradford A. Barker,
-# Last Modified: August 4, 2020.
+# Last Modified: October 22, 2020.
 #
 #                                                                                         #
 ###########################################################################################
@@ -172,16 +172,8 @@ def occupied_beta(occ_ref_beta,ic):
     # The above comment is handled in `calculate...` function    
     #new_ic = occ_ref_beta[-1] + ic
     
-    #occ_beta = np.concatenate((occ_ref_beta,np.asarray([int(ic)])))
     occ_beta = occ_ref_beta[:]
-    #print(occ_beta)
-    #occ_beta.tolist()
-    #print(occ_beta)
     occ_beta.append(ic)
-    #print(occ_beta)
-    #print(occ_ref_beta)
-    #quit()
-    #occ_beta = [ int(occ) for occ in occ_beta ]
     
     return np.asarray(occ_beta)
 
@@ -254,6 +246,8 @@ def case_two_a(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     # BAB debug: output list of the different up-spin orbital, in order [orbital_alpha_no_prime,orbital_alpha_prime]
     alpha_orb_idx = [x for x in occ_alpha1 if x not in set(occ_alpha2)]
     alpha_orb_idx = alpha_orb_idx + [x for x in occ_alpha2 if x not in set(occ_alpha1)]
+    # define beta_orb_idx as null list, for use in slater determinant phase calculation
+    beta_orb_idx = []
     #alpha_orb_idx = list(set(occ_alpha1).symmetric_difference(occ_alpha2))
     # end BAB
 
@@ -306,7 +300,7 @@ def case_two_a(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(sl1)
     print('Slater 2')
     print(sl2)
-    sl_phase = slater_phase(sl1,sl2)
+    sl_phase = slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx)
     print('sl_phase')
     print(sl_phase)
     print()
@@ -340,6 +334,8 @@ def case_two_b(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     occ_beta2 = occupied_beta(occ_ref_beta,icp)
     beta_orb_idx = [x for x in occ_beta1 if x not in set(occ_beta2)]
     beta_orb_idx = beta_orb_idx + [x for x in occ_beta2 if x not in set(occ_beta1)]
+    # initialize alpha_orb_idx as null list for slater determinant phase calculation
+    alpha_orb_idx = []
     # end BAB
 
     print('case two b')
@@ -381,7 +377,8 @@ def case_two_b(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(sl1)
     print('Slater 2')
     print(sl2)
-    sl_phase = slater_phase(sl1,sl2)
+    #sl_phase = slater_phase(sl1,sl2)
+    sl_phase = slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx)
     print('sl_phase')
     print(sl_phase)
     print()
@@ -485,7 +482,8 @@ def case_three(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(sl1)
     print('Slater 2')
     print(sl2)
-    sl_phase = slater_phase(sl1,sl2)
+    #sl_phase = slater_phase(sl1,sl2)
+    sl_phase = slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx)
     print('sl_phase')
     print(sl_phase)
     print()
@@ -568,26 +566,86 @@ def make_slater(el,occ_alpha,occ_beta):
                 
     return slater    
 
-def slater_phase(sl1,sl2):
+def slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx):
     # each slater determinant has form
     # [ [ib1, is1 ] , [ib2, is2] , ...  ]
     
-    # we count permutations by tracking swapped spins, between pairs of slater determinants
     
     slen = len(sl1)
     if len(sl2) != slen:
         quit('Slater determinants are of unequal size')
     
-    count = 0
-    for ii in range(slen):
-        if sl1[ii][1] != sl2[ii][1]:
-            count += 1
-    nswap = count/2
-    
-    sl_phase = (-1)**(nswap)
-    
-    return sl_phase
+    # we count permutations by tracking swapped spins, between pairs of slater determinants
+    #
+    #count = 0
+    #for ii in range(slen):
+    #    if sl1[ii][1] != sl2[ii][1]:
+    #        count += 1
+    #nswap = count/2
+    #sl_phase = (-1)**(nswap)
 
+    # If beta_orb_idx is a null list, we are in Case 2A,
+    #  meaning, sl1 has an orbital [ alpha_orb_idx[0] , 0 ]
+    #  and sl2 has an orbital [ alpha_orb_idx[1] , 0 ]
+    #  that need to be placed in the first position,
+    #  with a phase contribution of (-1)**(position_of_orbital_in_det - 1)
+    #  N.B.: the index of these orbitals is position_of_orbital_in_det - 1
+    if (len(alpha_orb_idx) != 0 and len(beta_orb_idx) == 0):
+    
+        # code here
+        pos1a = sl1.index([alpha_orb_idx[0] , 0])
+        pos2a = sl2.index([alpha_orb_idx[1] , 0])
+
+        sl_phase = (-1)**(pos1a - pos2a)
+
+    
+    # If alpha_orb_idx is a null list, we are in Case 2B,
+    #  meaning, sl1 has an orbital [ beta_orb_idx[0] , 1 ]
+    #  and sl2 has an orbital [ beta_orb_idx[1] , 1 ]
+    #  that need to be placed in the first position,
+    #  with a phase contribution of (-1)**(position_of_orbital_in_det - 1)
+    elif ( len(beta_orb_idx) != 0 and len(alpha_orb_idx) == 0 ):
+    
+        # code here
+        pos1b = sl1.index([beta_orb_idx[0] , 1])
+        pos2b = sl2.index([beta_orb_idx[1] , 1])
+
+        sl_phase = (-1)**(pos1b - pos2b)
+    
+    # If neither alpha_ nor beta_orb_idx are null lists, we are in Case 3,
+    #  meaning, sl1 has orbital [alpha_orb_idx[0] , 0 ]
+    #  and sl2 has orbital [alpha_orb_idx[1], 0 ]
+    #  that need to be placed in the first position, 
+    #  with a phase contribution of (-1)**(position_of_orbital_in_det - 1)
+    #  AND THEN
+    #  sl1 has orbital [ beta_orb_idx[0] , 1 ]
+    #  and sl2 has an orbital [ beta_orb_idx[1] , 1 ]
+    #  that need to be placed in the second position,
+    #  with a phase contribution of (-1)**(position_of_orbital_in_det - 2)
+    
+    elif ( len(beta_orb_idx) != 0 and len(alpha_orb_idx) != 0 ):
+
+        # code here    
+        pos1a = sl1.index([alpha_orb_idx[0] , 0])
+        pos2a = sl2.index([alpha_orb_idx[1] , 0])
+
+        sl_phase = (-1)**(pos1a - pos2a)
+
+        # two cases for the down-spins:
+        # if pos1b < pos1a, then the beta orbital does not see the alpha orbital
+        # if pos1b > pos1a, there is one fewer orbital for the beta orbital to permute with
+        
+        pos1b = sl1.index([beta_orb_idx[0] , 1])
+        pos2b = sl2.index([beta_orb_idx[1] , 1])
+
+        if (pos1b > pos1a):
+            pos1b -= 1
+        if (pos2b > pos2a):
+            pos2b -= 1        
+
+        sl_phase = sl_phase*(-1)**(pos1b - pos2b)
+
+    return sl_phase
             
 def static_factor(occ_ref_alpha,occ_ref_beta):
 
