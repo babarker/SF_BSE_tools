@@ -581,7 +581,7 @@ def main():
 
     # Print the final result!
     print("Estimate for <S^2> for excitations, ordered by energy: ")
-    print(s2)
+    print(np.real(s2))
     print()
 
     return
