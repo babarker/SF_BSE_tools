@@ -183,7 +183,7 @@ def case_one(occ_ref_alpha,occ_ref_beta,iv,ic,osqarray):
     print('occ_beta')
     print(occ_beta)
 
-    temp = 0.0
+    temp = complex(0.0)
     for mm in occ_alpha:
         for nn in occ_beta:
             temp = temp + osqarray[mm-1,nn-1]
@@ -226,7 +226,7 @@ def case_two_a(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(occ_beta)
     print()
 
-    temp = 0.0
+    temp = complex(0.0)
     for nn in occ_beta:
         # BAB debug
         print('nn, iv, ivp')
@@ -279,7 +279,7 @@ def case_two_b(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(occ_alpha)
     print()
 
-    temp = 0.0
+    temp = complex(0.0)
     for mm in occ_alpha:
         # BAB debug
         print('mm,ic,icp')
@@ -356,10 +356,10 @@ def case_three(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     #temp = reoarray[iv-1,icp-1]*reoarray[ivp-1,ic-1] + imoarray[iv-1,icp-1]*imoarray[ivp-1,ic-1]
     #temp = temp - 1j*reoarray[iv-1,icp-1]*imoarray[ivp-1,ic-1] + 1j*imoarray[iv-1,icp-1]*reoarray[ivp-1,ic-1]
     #temp = (-1.0)**(iv-ivp)*(-1.0)**(ic-icp)*temp
-    temp = reoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*reoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1] 
-    temp = temp + imoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*imoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1]
-    temp = temp - 1j*reoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*imoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1] 
-    temp = temp + 1j*imoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*reoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1]
+    temp = complex(reoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*reoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1]) 
+    temp = complex(temp + imoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*imoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1])
+    temp = complex(temp - 1j*reoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*imoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1]) 
+    temp = complex(temp + 1j*imoarray[alpha_orb_idx[0]-1,beta_orb_idx[1]-1]*reoarray[alpha_orb_idx[1]-1,beta_orb_idx[0]-1])
 
     # BAB debug: use slater determinant method...
     sl1 = make_slater(el,occ_alpha1,occ_beta1)

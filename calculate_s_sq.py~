@@ -495,7 +495,7 @@ def calculate_s2(nvb,ncb):
     occ_ref_alpha, occ_ref_beta = occ_ref(ifmin,ifmax,nvb)
 
     # initialize <S^2>:
-    s2 = np.zeros((nvb*ncb),dtype='complex')
+    s2 = np.zeros((nvb*ncb),dtype="complex")
     
     # loop through excitation number,
     # then loop through valence and conduction bands in row and col dimensions,

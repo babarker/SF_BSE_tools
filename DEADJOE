@@ -1,0 +1,34 @@
+
+*** These modified files were found in JOE when it aborted on Tue Oct 27 23:38:26 2020
+*** JOE was aborted because the terminal closed
+
+*** File '(Unnamed)'
+sla
+ls2
+sla
+sl_phase
+sl_phase
+sl_phase
+  128 
+weig
+weig
+weig
+
+*** File '(Unnamed)'
+../../ethylene_torsion_potential/excited_state_type1/spin_sq_exp_val_june_18_2020.py
+../../ethylene_torsion_potential/excited_state_type1/spin_sq_exp_val_june_18_2020.py
+sf_bse_out_10_26_2020
+energies.txt
+energies.txt
+sf_bse_out_10_26_2020_8_37PM
+energies.txt
+energies.txt
+print_eigvec.py
+print_eigvec.py
+calculate_s_sq.py
+
+*** File '* Startup Log *'
+Processing '/etc/joe/jpicorc'...
+Processing '/etc/joe/ftyperc'...
+Finished processing /etc/joe/ftyperc
+Finished processing /etc/joe/jpicorc
