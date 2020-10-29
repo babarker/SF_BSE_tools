@@ -186,6 +186,8 @@ def case_one(occ_ref_alpha,occ_ref_beta,iv,ic,osqarray):
     temp = complex(0.0)
     for mm in occ_alpha:
         for nn in occ_beta:
+            print('osqarray')
+            print(osqarray[mm-1,nn-1])
             temp = temp + osqarray[mm-1,nn-1]
 
     # Need the negative of the above
@@ -581,7 +583,7 @@ def main():
 
     # Print the final result!
     print("Estimate for <S^2> for excitations, ordered by energy: ")
-    print(s2)
+    print(np.real(s2))
     print()
 
     return
