@@ -16,7 +16,7 @@ import sys
 import h5py
 import numpy as np
 
-nbsmall = 128+30
+nbsmall = 30
 
 
 def swap_spins():

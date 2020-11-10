@@ -26,7 +26,7 @@ import sys
 import pickle, os
 import h5py
 import numpy as np
-import constants
+from constants import Ry2eV as RYD
 import parse_bsemat
 # get_bsemat
 #   in:  none
@@ -151,7 +151,7 @@ def read_eqp():
         #el[spin,0,ii+ibmin-1]
         ind = ii%(ibmax-ibmin+1)
         print(ind)
-        el[spin,0,ind+ibmin-1] = eqp
+        el[spin,0,ind+ibmin-1] = eqp/RYD
 
     print(el[1,0,ibmin-1:ibmax-1])
     
