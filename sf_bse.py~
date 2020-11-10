@@ -152,7 +152,7 @@ def read_eqp():
         ind = ii%(ibmax-ibmin+1)
         print(ind)
         el[spin,0,ind+ibmin-1] = eqp
-
+    quit()
     print(el[1,0,ibmin-1:ibmax-1])
     
     ff.close()
