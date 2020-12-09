@@ -34,7 +34,7 @@ def swap_spins():
 # wfns/coeffs [mnband,nspin*nspinor,ngktot,1 real 2 cplx]
 
 
-    wfnold = "wfn_old.h5"
+    wfnold = "wfn_new.h5"
     wfnnew = "wfn_flip.h5"
 
     f_in = h5py.File(wfnold)
