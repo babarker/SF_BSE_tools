@@ -24,8 +24,13 @@ def parse_overlaps(ifmin,ifmax,nvb,ncb):
     #   ifmax[1,0] is used for the valence bands,
     #   ifmax[0,0] is used for the conduction bands.
     # This is confusing and perhaps un-satisfactory.
-    ifmax_v = ifmax[1,0]
-    ifmax_c = ifmax[0,0]
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # March 2021: using WFN file data and not BSEMAT, spin no longer reversed!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #ifmax_v = ifmax[1,0]
+    #ifmax_c = ifmax[0,0]
+    ifmax_v = ifmax[0,0]
+    ifmax_c = ifmax[1,0]
 
     fname="overlaps.dat" # this is standard
     

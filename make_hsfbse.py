@@ -146,3 +146,59 @@ def make_hsfbse(ekv,ekc,head,wing,body):
     #print( hbse*RYD)
     #print( " ")
     return hbse
+
+def make_hsfbse_no_kernel(ekv,ekc):
+
+    #print( [vv*RYD for vv in ekv])
+    #print( [cc*RYD for cc in ekc])
+
+
+    # initialize
+    hbse = np.zeros((len(ekv)*len(ekc),len(ekv)*len(ekc)),dtype=float)
+
+    print("From make_hsfbse.py ...")
+    print()
+    
+    for iv in range(len(ekv)):
+        for ic in range(len(ekc)):
+            # BAB note: make sure this is consistent with below!!!
+            #ibse = iv*len(ekc)+ic  
+            ibse = ic*len(ekv)+iv  
+            hbse[ibse,ibse] = ekc[ic] - ekv[iv]
+
+            print("hbse["+str(ibse)+","+str(ibse)+"] = ekc["+str(ic)+"] - ekv["+str(iv)+"]")
+            
+            #print( hbse[ibse,ibse]*RYD)
+            #print( "iv")
+            #print( iv)
+            #print( "ic")
+            #print( ic)
+            #print( " ")
+
+    print("ekv[0]")
+    print(ekv[0])
+    print("ekv[1]")
+    print(ekv[1])
+    print("ekc[0]")
+    print(ekc[0])
+    print("ekc[1]")
+    print(ekc[1])
+
+    print()
+    print()
+    print("Energy differences: ")
+    print(hbse)
+    print()
+    print()
+    print("hbse[0,0]: ")
+    print(hbse[0,0])
+    print("hbse[1,1]: ")
+    print(hbse[1,1])
+    print("hbse[2,2]: ")
+    print(hbse[2,2])
+    print("hbse[3,3]: ")
+    print(hbse[3,3])
+    print()
+    print()
+
+    return hbse
