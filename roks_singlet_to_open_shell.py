@@ -47,7 +47,7 @@ def swap_spins():
     #f_out.copy(f_in['mf_header/kpoints/nspin'], 'mf_header/kpoints/nspin')
     # Change number of spin channels to 2
     ns = 2
-    f_out.create_dataset('mf_header/kpoints/nspin', 1, 'd')
+    f_out.create_dataset('mf_header/kpoints/nspin', [1], 'd')
     f_out['mf_header/kpoints/nspin'][()] = ns
     # end
     f_out.copy(f_in['mf_header/kpoints/nspinor'], 'mf_header/kpoints/nspinor')
@@ -60,22 +60,22 @@ def swap_spins():
     f_out.copy(f_in['mf_header/kpoints/shift'], 'mf_header/kpoints/shift')
     f_out.copy(f_in['mf_header/kpoints/ngk'], 'mf_header/kpoints/ngk')
     # mf_header/kpoints/(ifmax, ifmin) [nspin, nrk]
-    nrk = int(f_out['mf_header/kpoints/nrk'])
+    nrk = int(f_out['mf_header/kpoints/nrk'][()])
     print('nrk :')
     print(nrk)
     print()
     f_out.create_dataset('mf_header/kpoints/ifmin', [ns, nrk], 'd')
-    f_out['mf_header/kpoints/ifmin'][0,:] = f_in['mf_header/kpoints/ifmin][:,:]
-    f_out['mf_header/kpoints/ifmin'][1,:] = f_in['mf_header/kpoints/ifmin][:,:]
+    f_out['mf_header/kpoints/ifmin'][0,:] = f_in['mf_header/kpoints/ifmin'][:,:]
+    f_out['mf_header/kpoints/ifmin'][1,:] = f_in['mf_header/kpoints/ifmin'][:,:]
     f_out.create_dataset('mf_header/kpoints/ifmax', [ns, nrk], 'd')
-    f_out['mf_header/kpoints/ifmax'][0,:] = f_in['mf_header/kpoints/ifmax][:,:]
-    f_out['mf_header/kpoints/ifmax'][1,:] = f_in['mf_header/kpoints/ifmax][:,:]
+    f_out['mf_header/kpoints/ifmax'][0,:] = f_in['mf_header/kpoints/ifmax'][:,:]
+    f_out['mf_header/kpoints/ifmax'][1,:] = f_in['mf_header/kpoints/ifmax'][:,:]
     #
     f_out.copy(f_in['mf_header/kpoints/w'], 'mf_header/kpoints/w')
     f_out.copy(f_in['mf_header/kpoints/rk'], 'mf_header/kpoints/rk')
 
     # mf_header/kpoints/el [nspin,nrk,mnband]
-    mnband = int(f_out['mf_header/kpoints/mnband'])
+    mnband = int(f_out['mf_header/kpoints/mnband'][()])
     print('mnband :')
     print(mnband)
     print()
@@ -98,8 +98,10 @@ def swap_spins():
     # wfns/coeffs [mnband,nspin*nspinor,ngktot,1 real 2 cplx]
     shape = list(f_in['wfns/coeffs'].shape)
     f_out.create_dataset('wfns/coeffs', [mnband,ns,shape[2],shape[3]], 'f')
-    f_out['wfns/coeffs'][:,0,:,:] = f_in['wfns/coeffs'][:,:,:,:]
-    f_out['wfns/coeffs'][:,1,:,:] = f_in['wfns/coeffs'][:,:,:,:]
+    f_out['wfns/coeffs'][:,0,:,:] = f_in['wfns/coeffs'][:,0,:,:]
+    f_out['wfns/coeffs'][:,1,:,:] = f_in['wfns/coeffs'][:,0,:,:]
+    #f_out['wfns/coeffs'][:,0,:,:] = f_in['wfns/coeffs'][:,:,:,:]
+    #f_out['wfns/coeffs'][:,1,:,:] = f_in['wfns/coeffs'][:,:,:,:]
     #
 # debug
 #    print f_in['wfns/coeffs'][0,0,:]
