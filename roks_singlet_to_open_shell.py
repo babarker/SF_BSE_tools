@@ -33,6 +33,12 @@ def swap_spins():
 # wfns/coeffs [mnband,nspin*nspinor,ngktot,1 real 2 cplx]
 
 
+    open_shell_bands = [127,128]
+    max_open_shell_bands = np.amax(np.asarray(open_shell_bands))
+    size_open_shell_bands = len(open_shell_bands)
+    ifmax_down_open_shell = max_open_shell_bands - size_open_shell_bands
+
+
     wfnold = "wfn_old.h5"
     wfnnew = "wfn_new.h5"
 
@@ -70,6 +76,15 @@ def swap_spins():
     f_out.create_dataset('mf_header/kpoints/ifmax', [ns, nrk], 'd')
     f_out['mf_header/kpoints/ifmax'][0,:] = f_in['mf_header/kpoints/ifmax'][:,:]
     f_out['mf_header/kpoints/ifmax'][1,:] = f_in['mf_header/kpoints/ifmax'][:,:]
+    # Now edit for open_shell_band:
+    f_out['mf_header/kpoints/ifmax'][0,:] = np.amax(np.asarray(open_shell_bands))
+    f_out['mf_header/kpoints/ifmax'][1,:] = ifmax_down_open_shell
+
+    ifmin_0 = int(f_out['mf_header/kpoints/ifmin'][0,:][()])
+    ifmin_1 = int(f_out['mf_header/kpoints/ifmin'][1,:][()])
+    ifmax_0 = int(f_out['mf_header/kpoints/ifmax'][0,:][()])
+    ifmax_1 = int(f_out['mf_header/kpoints/ifmax'][1,:][()])
+
     #
     f_out.copy(f_in['mf_header/kpoints/w'], 'mf_header/kpoints/w')
     f_out.copy(f_in['mf_header/kpoints/rk'], 'mf_header/kpoints/rk')
@@ -87,6 +102,9 @@ def swap_spins():
     f_out.create_dataset('mf_header/kpoints/occ', [ns,nrk,mnband], 'f')
     f_out['mf_header/kpoints/occ'][0,:,:] = f_in['mf_header/kpoints/occ'][:,:,:]
     f_out['mf_header/kpoints/occ'][1,:,:] = f_in['mf_header/kpoints/occ'][:,:,:]
+    # Now edit for open_shell_band:
+    f_out['mf_header/kpoints/occ'][0,:,ifmin_0:ifmax_0] = 1.0
+    f_out['mf_header/kpoints/occ'][1,:,ifmax_1:] = 0.0
 
     f_out.copy(f_in['mf_header/gspace'], 'mf_header/gspace')
     f_out.copy(f_in['mf_header/symmetry'], 'mf_header/symmetry')
