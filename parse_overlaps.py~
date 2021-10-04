@@ -29,8 +29,8 @@ def parse_overlaps(ifmin,ifmax,nvb,ncb):
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     #ifmax_v = ifmax[1,0]
     #ifmax_c = ifmax[0,0]
-    ifmax_v = int(ifmax[0,0])
-    ifmax_c = int(ifmax[1,0])
+    ifmax_v = ifmax[0,0]
+    ifmax_c = ifmax[1,0]
 
     fname="overlaps.dat" # this is standard
     

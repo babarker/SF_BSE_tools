@@ -64,6 +64,15 @@ def scgwtool():
     This is the major function that controls the flow
     """
 
+    # wavefunctions
+    print
+    print "============================== Step 1/1 =============================="
+    print "==                                                                  =="
+    print "==                     Updating wavefunctions                       =="
+    print "==                                                                  =="
+    print "======================================================================"
+    print
+
     fix_occs()
  
     return

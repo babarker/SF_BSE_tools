@@ -8,7 +8,7 @@
 #
 # Method based on J. Chem. Phys. 102, 3477 (1995); https://doi.org/10.1063/1.468585
 #
-# To run, execute python calculate_s_sq.py --nv_in V --nc_in C
+# To run, execute python calculate_s_sq.py --wfn wfn.h5 --nv_in V --nc_in C
 #
 #
 # Author: Bradford A. Barker,
@@ -26,6 +26,7 @@ import constants
 import pickle, os
 import parse_overlaps
 import parse_bsemat
+import parse_wfnh5
 #import read_input
 # get_val_and_cond
 #   in: none (from command line: nv_in, nc_in)
@@ -42,6 +43,9 @@ def get_val_and_cond():
     parser = ArgumentParser(description=desc)
 
     group = parser.add_argument_group('bands')
+    group.add_argument('--wfn', type=str, default='wfn.h5', nargs=1,
+        metavar=('wfn'),
+        help='Filename for h5 format wavefunction file. Defaults to wfn.h5.')
     group.add_argument('--nv_in', type=int, default=1, nargs=1,
         metavar=('nv_in'),
         help='Number of valence bands requested for construction of SF-BSE Hamiltonian. Defaults to 1.')
@@ -51,9 +55,9 @@ def get_val_and_cond():
 
     args = parser.parse_args()
 
-    return args.nv_in, args.nc_in
+    return args.wfn, args.nv_in, args.nc_in
 
-def read_data(nvb,ncb):
+def read_data(wfn,nvb,ncb):
 
     # This will be called in function calculate_s2
     
@@ -62,7 +66,11 @@ def read_data(nvb,ncb):
     # We need ifmin and ifmax for parse_overlaps, as well.
     #
 
-    el, occ, ifmin, ifmax = parse_bsemat.get_enk_from_bsemat()
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # March 2021: using WFN file data and not BSEMAT, spin no longer reversed!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #el, occ, ifmin, ifmax = parse_bsemat.get_enk_from_bsemat()
+    el, occ, ifmin, ifmax = parse_wfnh5.get_enk_from_wfnh5(wfn)
 
     # Read in the overlap matrix information by calling the appropriate function
     reoarray, imoarray, osqarray = parse_overlaps.parse_overlaps(ifmin,ifmax,nvb,ncb)
@@ -99,10 +107,17 @@ def occ_ref(ifmin,ifmax,nvb):
     # initialize list of occupied bands, given the occupations of the high-spin ref. state
 
     # The spin order from BSE Kernel is actually swapped    
-    ifmina = ifmin[1,0] # no need to worry about k-points for SF-BSE
-    ifminb = ifmin[0,0]
-    ifmaxa = ifmax[1,0]
-    ifmaxb = ifmax[0,0]
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # March 2021: using WFN file data and not BSEMAT, spin no longer reversed!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #ifmina = ifmin[1,0] # no need to worry about k-points for SF-BSE
+    #ifminb = ifmin[0,0]
+    #ifmaxa = ifmax[1,0]
+    #ifmaxb = ifmax[0,0]
+    ifmina = int(ifmin[0,0]) # no need to worry about k-points for SF-BSE
+    ifminb = int(ifmin[1,0])
+    ifmaxa = int(ifmax[0,0])
+    ifmaxb = int(ifmax[1,0])
 
     # What we actually need is to create a list with the user-specified number_valence_bands,
     # mapped to low-to-high indexing (from BSE indexing),
@@ -112,7 +127,7 @@ def occ_ref(ifmin,ifmax,nvb):
     #       (7-1) - (5-1) = 2. For Nv > 2, we compute Nv - 2 (when Nv = 2, we return an null list; Nv<2 is an error);
     # This is the number of entries in the list of occupied down-spin states, with band index up to and including ifmaxb.
 
-    occ_ref_alpha = np.asarray(range(ifmaxa+1-nvb,ifmaxa+1))
+    occ_ref_alpha = np.asarray(list(range(ifmaxa+1-nvb,ifmaxa+1)))
 
     excess_spin = (ifmaxa - ifmina) - (ifmaxb - ifminb)
 
@@ -382,6 +397,9 @@ def make_slater(el,occ_alpha,occ_beta):
     # order states in slater determinant list from low energy to high energy
     # Careful: The spin order from BSE Kernel is actually swapped,
     # for using spin in el
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # March 2021: using WFN file data and not BSEMAT, spin no longer reversed!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     # Start with spin-up states
     slater = []    
@@ -391,7 +409,8 @@ def make_slater(el,occ_alpha,occ_beta):
     # Now check 
     for jj in occ_beta:
         for ii in range(len(slater)):
-            if el[0,0,jj-1] < el[1,0,slater[ii][0]-1]:
+            #if el[0,0,jj-1] < el[1,0,slater[ii][0]-1]:
+            if el[1,0,jj-1] < el[0,0,slater[ii][0]-1]:
                 new_slater = slater[:ii]+[[jj,1]]+slater[ii:]
                 slater = new_slater
                 break
@@ -470,6 +489,17 @@ def slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx):
 
         sl_phase = sl_phase*(-1)**(pos1b - pos2b)
 
+        # BAB: July 19, 2021
+        # One final check for Case 3:
+        # We need to compare the orbital index for the alpha and beta orbitals
+        # within each determinant
+        # to see if we need one final swap to order the pair from low index to high index.
+        #if ( beta_orb_idx[0] < alpha_orb_idx[0]):
+        #    sl_phase *= -1
+        #if ( beta_orb_idx[1] < alpha_orb_idx[1]):
+        #    sl_phase *= -1
+        
+
     return sl_phase
             
 def static_factor(occ_ref_alpha,occ_ref_beta):
@@ -486,15 +516,26 @@ def static_factor(occ_ref_alpha,occ_ref_beta):
     
     return diff/2.00*(diff/2.00 + 1) + N_b
 
-def calculate_s2(nvb,ncb):
+def calculate_s2(wfn,nvb,ncb):
 
     # call read_data
-    el, ifmin, ifmax, reoarray, imoarray, osqarray, Avec = read_data(nvb,ncb)
-    ifmax_v = ifmax[1,0]
-    ifmax_c = ifmax[0,0]
+    el, ifmin, ifmax, reoarray, imoarray, osqarray, Avec = read_data(wfn,nvb,ncb)
+    #ifmax_v = ifmax[1,0]
+    #ifmax_c = ifmax[0,0]
+    ifmax_v = int(ifmax[0,0])
+    ifmax_c = int(ifmax[1,0])
 
     # create list of occupied orbitals in the high-spin reference state
     occ_ref_alpha, occ_ref_beta = occ_ref(ifmin,ifmax,nvb)
+
+    # BAB debug:
+    print('occ_ref_alpha')
+    print(occ_ref_alpha)
+    print('occ_ref_beta')
+    print(occ_ref_beta)
+    print(' ')
+    print(' ')
+
 
     # initialize <S^2>:
     s2 = np.zeros((nvb*ncb),dtype="complex")
@@ -505,6 +546,7 @@ def calculate_s2(nvb,ncb):
     # N.B.: the band indices in the loop are in `BSE` index format.
 
     for iexc in range(nvb*ncb):
+    #for iexc in range(40):
         for iv in range(nvb):
             for ic in range(ncb):
                 for ivp in range(nvb):
@@ -576,14 +618,14 @@ def calculate_s2(nvb,ncb):
 
 def main():
 
-    nvb, ncb = get_val_and_cond()
-    nvb = nvb[0] ; ncb = ncb[0]
+    wfn, nvb, ncb = get_val_and_cond()
+    #wfn = wfn[0] ; nvb = nvb[0] ; ncb = ncb[0]
 
-    s2 = calculate_s2(nvb,ncb)
+    s2 = calculate_s2(wfn,nvb,ncb)
 
     # Print the final result!
     print("Estimate for <S^2> for excitations, ordered by energy: ")
-    print(np.real(s2))
+    print(np.absolute(s2))
     print()
 
     return

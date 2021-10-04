@@ -33,8 +33,7 @@ def swap_spins():
 # wfns/coeffs [mnband,nspin*nspinor,ngktot,1 real 2 cplx]
 
 
-    #open_shell_bands = [127,128]
-    open_shell_bands = [6,7]
+    open_shell_bands = [127,128]
     max_open_shell_bands = np.amax(np.asarray(open_shell_bands))
     size_open_shell_bands = len(open_shell_bands)
     ifmax_down_open_shell = max_open_shell_bands - size_open_shell_bands

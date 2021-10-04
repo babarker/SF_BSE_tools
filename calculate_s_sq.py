@@ -114,10 +114,10 @@ def occ_ref(ifmin,ifmax,nvb):
     #ifminb = ifmin[0,0]
     #ifmaxa = ifmax[1,0]
     #ifmaxb = ifmax[0,0]
-    ifmina = ifmin[0,0] # no need to worry about k-points for SF-BSE
-    ifminb = ifmin[1,0]
-    ifmaxa = ifmax[0,0]
-    ifmaxb = ifmax[1,0]
+    ifmina = int(ifmin[0,0]) # no need to worry about k-points for SF-BSE
+    ifminb = int(ifmin[1,0])
+    ifmaxa = int(ifmax[0,0])
+    ifmaxb = int(ifmax[1,0])
 
     # What we actually need is to create a list with the user-specified number_valence_bands,
     # mapped to low-to-high indexing (from BSE indexing),
@@ -127,7 +127,7 @@ def occ_ref(ifmin,ifmax,nvb):
     #       (7-1) - (5-1) = 2. For Nv > 2, we compute Nv - 2 (when Nv = 2, we return an null list; Nv<2 is an error);
     # This is the number of entries in the list of occupied down-spin states, with band index up to and including ifmaxb.
 
-    occ_ref_alpha = np.asarray(range(ifmaxa+1-nvb,ifmaxa+1))
+    occ_ref_alpha = np.asarray(list(range(ifmaxa+1-nvb,ifmaxa+1)))
 
     excess_spin = (ifmaxa - ifmina) - (ifmaxb - ifminb)
 
@@ -489,6 +489,17 @@ def slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx):
 
         sl_phase = sl_phase*(-1)**(pos1b - pos2b)
 
+        # BAB: July 19, 2021
+        # One final check for Case 3:
+        # We need to compare the orbital index for the alpha and beta orbitals
+        # within each determinant
+        # to see if we need one final swap to order the pair from low index to high index.
+        #if ( beta_orb_idx[0] < alpha_orb_idx[0]):
+        #    sl_phase *= -1
+        #if ( beta_orb_idx[1] < alpha_orb_idx[1]):
+        #    sl_phase *= -1
+        
+
     return sl_phase
             
 def static_factor(occ_ref_alpha,occ_ref_beta):
@@ -511,8 +522,8 @@ def calculate_s2(wfn,nvb,ncb):
     el, ifmin, ifmax, reoarray, imoarray, osqarray, Avec = read_data(wfn,nvb,ncb)
     #ifmax_v = ifmax[1,0]
     #ifmax_c = ifmax[0,0]
-    ifmax_v = ifmax[0,0]
-    ifmax_c = ifmax[1,0]
+    ifmax_v = int(ifmax[0,0])
+    ifmax_c = int(ifmax[1,0])
 
     # create list of occupied orbitals in the high-spin reference state
     occ_ref_alpha, occ_ref_beta = occ_ref(ifmin,ifmax,nvb)
@@ -535,6 +546,7 @@ def calculate_s2(wfn,nvb,ncb):
     # N.B.: the band indices in the loop are in `BSE` index format.
 
     for iexc in range(nvb*ncb):
+    #for iexc in range(40):
         for iv in range(nvb):
             for ic in range(ncb):
                 for ivp in range(nvb):

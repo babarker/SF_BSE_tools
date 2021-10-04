@@ -32,3 +32,9 @@ Processing '/etc/joe/jpicorc'...
 Processing '/etc/joe/ftyperc'...
 Finished processing /etc/joe/ftyperc
 Finished processing /etc/joe/jpicorc
+
+*** These modified files were found in JOE when it aborted on Tue Jul  6 00:33:32 2021
+*** JOE was aborted because the terminal closed
+
+*** These modified files were found in JOE when it aborted on Tue Jul  6 22:55:04 2021
+*** JOE was aborted because the terminal closed

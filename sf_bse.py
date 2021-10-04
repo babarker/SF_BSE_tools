@@ -114,7 +114,7 @@ def sf_bse(wfn,nv,nc,eig_type,kernel_off):
     # March 2021: using WFN file data and not BSEMAT, spin no longer reversed!
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     #ekv = el[1,0,ifmax[1,0]-nv:ifmax[1,0]]
-    ekv = el[0,0,ifmax[0,0]-nv:ifmax[0,0]]
+    ekv = el[0,0,int(ifmax[0,0])-nv:int(ifmax[0,0])]
     print("ekv before reversing order: ")
     print(ekv)
     print()
@@ -128,7 +128,7 @@ def sf_bse(wfn,nv,nc,eig_type,kernel_off):
     # March 2021: using WFN file data and not BSEMAT, spin no longer reversed!
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     #ekc = el[0,0,ifmax[0,0]:ifmax[0,0]+nc]
-    ekc = el[1,0,ifmax[1,0]:ifmax[1,0]+nc]
+    ekc = el[1,0,int(ifmax[1,0]):int(ifmax[1,0])+nc]
     # Pick out the subsections of BSE Kernel head and body:
     # N.B.: these sub-matrices now only have shape [nc,nc,nv,nv]
     sub_head = head[0,0,0:nc,0:nc,0:nv,0:nv,0]
