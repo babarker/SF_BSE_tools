@@ -265,7 +265,7 @@ def case_two_a(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(sl1)
     print('Slater 2')
     print(sl2)
-    sl_phase = slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx)
+    sl_phase = slater_phase(el,sl1,sl2,alpha_orb_idx,beta_orb_idx)
     print('sl_phase')
     print(sl_phase)
     print()
@@ -316,7 +316,7 @@ def case_two_b(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(sl1)
     print('Slater 2')
     print(sl2)
-    sl_phase = slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx)
+    sl_phase = slater_phase(el,sl1,sl2,alpha_orb_idx,beta_orb_idx)
     print('sl_phase')
     print(sl_phase)
     print()
@@ -385,7 +385,7 @@ def case_three(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     print(sl1)
     print('Slater 2')
     print(sl2)
-    sl_phase = slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx)
+    sl_phase = slater_phase(el,sl1,sl2,alpha_orb_idx,beta_orb_idx)
     print('sl_phase')
     print(sl_phase)
     print()
@@ -394,6 +394,7 @@ def case_three(el,occ_ref_alpha,occ_ref_beta,iv,ic,ivp,icp,reoarray,imoarray):
     return -temp
 
 def make_slater(el,occ_alpha,occ_beta):
+
     # order states in slater determinant list from low energy to high energy
     # Careful: The spin order from BSE Kernel is actually swapped,
     # for using spin in el
@@ -406,7 +407,7 @@ def make_slater(el,occ_alpha,occ_beta):
     for ii in occ_alpha:
         slater.append([ii,0])
 
-    # Now check 
+    # Now populate with down-spin states, ordered by energy
     for jj in occ_beta:
         for ii in range(len(slater)):
             #if el[0,0,jj-1] < el[1,0,slater[ii][0]-1]:
@@ -420,7 +421,7 @@ def make_slater(el,occ_alpha,occ_beta):
                 
     return slater    
 
-def slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx):
+def slater_phase(el,sl1,sl2,alpha_orb_idx,beta_orb_idx):
 
     # each slater determinant has form
     # [ [ib1, is1 ] , [ib2, is2] , ...  ]  
@@ -437,7 +438,7 @@ def slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx):
     #  N.B.: the index of these orbitals is position_of_orbital_in_det - 1
 
     if (len(alpha_orb_idx) != 0 and len(beta_orb_idx) == 0):
-    
+     
         pos1a = sl1.index([alpha_orb_idx[0] , 0])
         pos2a = sl2.index([alpha_orb_idx[1] , 0])
 
@@ -489,16 +490,28 @@ def slater_phase(sl1,sl2,alpha_orb_idx,beta_orb_idx):
 
         sl_phase = sl_phase*(-1)**(pos1b - pos2b)
 
-        # BAB: July 19, 2021
-        # One final check for Case 3:
-        # We need to compare the orbital index for the alpha and beta orbitals
-        # within each determinant
-        # to see if we need one final swap to order the pair from low index to high index.
-        #if ( beta_orb_idx[0] < alpha_orb_idx[0]):
-        #    sl_phase *= -1
-        #if ( beta_orb_idx[1] < alpha_orb_idx[1]):
-        #    sl_phase *= -1
+        # BAB: Oct. 4, 2021
+        # We need to impose a check on the degeneracy of orbitals, across spin channels.
+        # Relevant especially for NV-minus center.
+        # Consider Restricted Kohn-Sham case, with Slater 1 | e_x up, e_y down > and
+        # Slater 2 | e_y up, e_x down > .
+        # Without the below correction, <S2> Ipatov formula will give an overall contribution of -1.
+        # Need reordering in Slater 2 to change order, | e_x down, e_y up >.
+        # This also holds even in Unrestricted case, despite energy being higher for e_x down.
         
+        # For each determinant, locate degenerate space of beta_orb_idx,
+        # check if alpha_orb_idx is in that space,
+        # and multiply sl_phase by -1 if beta_orb_idx is smaller than alpha_orb_idx.
+
+        for jj in [0,1]:
+            deg = []    
+            for ii in list(range(len(el[1,0,:]))):
+                if (abs(el[1,0,ii] - el[1,0,beta_orb_idx[jj]-1]) < 0.000001):
+                    deg.append(ii+1) # since the list above for el is indexed from one; see correction above, too.
+            print('deg')
+            print(deg)
+            if alpha_orb_idx[jj] in deg and alpha_orb_idx[jj] > beta_orb_idx[jj]:
+                sl_phase *= -1
 
     return sl_phase
             
