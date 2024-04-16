@@ -1,0 +1,38 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: SF_BSE_tools
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Bradford
+    name-particle: Alan
+    family-names: Barker
+    email: bbarker6@ucmerced.edu
+    affiliation: 'University of California, Merced'
+    orcid: 'https://orcid.org/0000-0003-1296-3069'
+  - given-names: Arabi
+    family-names: Seshappan
+    email: aseshappan@ucmerced.edu
+    affiliation: 'University of California, Merced'
+  - given-names: David
+    name-particle: A
+    family-names: Strubbe
+    email: dstrubbe@ucmerced.edu
+    affiliation: 'University of California, Merced'
+identifiers:
+  - type: url
+    value: 'https://arxiv.org/abs/2402.17719'
+repository-code: 'https://github.com/babarker/SF_BSE_tools'
+abstract: >-
+  Python scripts to assist with the Spin-Flip Bethe-Salpeter
+  Equation method of computing electronic energies and
+  states for open-shell systems within Many-Body
+  Perturbation Theory. For use with BerkeleyGW HDF5 format
+  files, especially WFN.h5. (berkeleygw.org.)
+license: MIT
+version: '0.0'
+date-released: '2024-04-15'
