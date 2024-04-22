@@ -2,7 +2,10 @@
 
 ###########################################################################################
 #                                                                                         #
-# This python script is used for spin-flip method.   #
+# This python script is to reverese the order of the spin indices in BerkeleyGW format
+# wfn.h5 files.
+# Input: wfn_old.h5 (file with original spin index ordering)
+# Output: wfn_sswap.h5 (file with spin indices interchanged)
 #                                                                                         #
 # Thanks to Diana Qiu, Ting Cao, Felipe da Jornada                               #
 #                                                                                         #
@@ -35,7 +38,7 @@ def swap_spins():
 
 
     wfnold = "wfn_old.h5"
-    wfnnew = "wfn_flip.h5"
+    wfnnew = "wfn_sswap.h5"
 
     f_in = h5py.File(wfnold)
     f_out = h5py.File(wfnnew, "w")
