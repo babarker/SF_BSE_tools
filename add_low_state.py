@@ -3,6 +3,15 @@
 ###########################################################################################
 #                                                                                         #
 # This python script is used for spin-flip method.   #
+#
+#   WARNING: This is untested, and will certainly fail for multiple k-points
+#
+#   Read in old wavefunction, spit out new wavefunction with additional garbage state
+#   in lowest position, with negative-infinity energy, for the spin channel with
+#   fewer occupied states.
+#
+#   Input: wfn_old.h5 (original wfn.h5 file)
+#   Output: wfn_new.h5 (new wfn file, with added bands
 #                                                                                         #
 # Thanks to Diana Qiu, Ting Cao, Felipe da Jornada                               #
 #                                                                                         #
@@ -20,7 +29,7 @@ import numpy as np
 #nbsmall = 30
 
 
-def swap_spins():
+def add_bands():
     r"""
 
     Read in old wavefunction, spit out new wavefunction with additional garbage state
@@ -255,26 +264,12 @@ def swap_spins():
 
     return
 
-def scgwtool():
-    r"""
-    This is the major function that controls the flow
-    """
-
-    swap_spins()
- 
-    return
-
-
-
-
 
 def main():
 
-    scgwtool()
+    add_bands()
 
     return
-
-
 
 
 
