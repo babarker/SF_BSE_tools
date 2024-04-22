@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 ###########################################################################################
-#                                                                                         #
+#    
+#  WARNING: THIS VERSION IS OBSOLETE AND WILL NOT GIVE MEANINGFUL RESULTS
+#
 # Execute this script in a directory with
 # 1) Data Files: eigvec.dat, overlaps.dat, and bsemat.h5
 # 2) Scripts: constants.py, parse_overlaps.py, parse_bsemat.py
