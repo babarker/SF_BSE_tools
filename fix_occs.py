@@ -3,25 +3,15 @@
 ###########################################################################################
 #                                                                                         #
 # This python script is used for spin-flip method.   #
-#                                                                                         #
-# Author: Zhenglu Li                                                                      #
-# Date: 08/10/2015                                                                        #
+#                                                                        
+#  Read in old wavefunction, spit out new wavefunction with occupations fixed
+#
+#                                                                   #
 #                                                                                         #
 # Thanks to Diana Qiu, Ting Cao, Felipe da Jornada, Meng Wu                               #
 #                                                                                         #
 ###########################################################################################
 
-#
-# Present version only supports complex spinless, with setting the following line in sigma.inp:
-#      sigma_matrix   -1/-2   0
-# we are averaging Sigma evaluated at two energies, from colomn and row
-# However they are usually very close to each other, so using one might be enough
-#
-#
-# To keep consistency with BerkeleyGW, we now force WFN_outer and WFN_iner use same number
-# of kpoints in the same order, although not necessarily.
-# kmap is defined under this assumption, or errors will occur.
-#
 
 
 import sys
