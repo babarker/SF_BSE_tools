@@ -23,11 +23,21 @@ import h5py
 import numpy as np
 from constants import Ry2eV as RYD
 
+def read_weff():
+
+    fin = open("w_eff.txt","r")
+    lines = fin.readlines()
+    weff = float(lines[1])
+    fin.close()
+
+    return weff
+
 def make_hsfbse(ekv,ekc,head,wing,body):
 
     #print( [vv*RYD for vv in ekv])
     #print( [cc*RYD for cc in ekc])
 
+    weff = read_weff()
 
     # initialize
     hbse = np.zeros((len(ekv)*len(ekc),len(ekv)*len(ekc)),dtype=float)
@@ -132,7 +142,8 @@ def make_hsfbse(ekv,ekc,head,wing,body):
                     ip = icp*len(ekv) + ivp
 
                     #hbse[ii,ip] += head[0,0,ic,icp,iv,ivp,0] + body[0,0,ic,icp,iv,ivp,0]
-                    hbse[ii,ip] += head[ic,icp,iv,ivp] + wing[ic,icp,iv,ivp] + body[ic,icp,iv,ivp]
+                    #hbse[ii,ip] += head[ic,icp,iv,ivp] + wing[ic,icp,iv,ivp] + body[ic,icp,iv,ivp]
+                    hbse[ii,ip] += head[ic,icp,iv,ivp]*weff + wing[ic,icp,iv,ivp] + body[ic,icp,iv,ivp]
                     print("hbse["+str(ii)+","+str(ip)+"] += kernel["+str(ic)+","+str(icp)+","+str(iv)+","+str(ivp)+"]")
 
     print()
